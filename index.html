@@ -43,7 +43,7 @@
             transition: 0.5s;
         }
 
-        /* --- ANIMATION DE VEILLE (VISIBLE PAR DÉFAUT) --- */
+        /* --- ANIMATION DE VEILLE --- */
         .idle-animation {
             position: absolute;
             top: 50%;
@@ -89,13 +89,16 @@
             100% { top: 20%; }
         }
 
-        /* --- CONTENU CACHÉ --- */
+        /* --- CONTENU --- */
         .content {
             opacity: 0;
             transform: scale(0.9);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 2;
             width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .card:hover {
@@ -112,17 +115,17 @@
             transform: scale(1);
         }
 
-        /* --- TITRES ET BOUTONS --- */
         h3 {
             color: var(--neon);
             text-transform: uppercase;
             letter-spacing: 4px;
-            font-size: 1rem;
-            margin-bottom: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
             text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
             display: flex;
             align-items: center;
             gap: 10px;
+            justify-content: center;
         }
 
         .btn-grid {
@@ -137,13 +140,13 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            padding: 15px;
+            padding: 12px;
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 10px;
             color: #eee;
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: bold;
             transition: 0.3s;
         }
@@ -160,7 +163,31 @@
         .disney:hover { background: #0063e5; box-shadow: 0 5px 15px rgba(0, 99, 229, 0.4); }
         .steam:hover { background: #171a21; border-color: #66c0f4; }
 
-        #clock { font-size: 3.5rem; font-weight: 800; font-family: monospace; }
+        #clock { font-size: 3rem; font-weight: 800; font-family: monospace; text-align: center; margin-top: 10px; }
+
+        /* --- STYLE BLOC NOTE --- */
+        #notepad {
+            width: 100%;
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--neon);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            resize: none;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        #save-status {
+            font-size: 0.65rem;
+            color: #444;
+            text-align: right;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
@@ -169,7 +196,7 @@
         <div class="card" style="border-color: #333;">
             <h3><i class="fa-solid fa-microchip"></i> SYSTEM_ACTIVE</h3>
             <div id="clock">00:00:00</div>
-            <div id="date" style="color: var(--neon); font-size: 0.8rem; margin-top: 10px;"></div>
+            <div id="date" style="color: var(--neon); font-size: 0.8rem; text-align: center; margin-top: 10px;"></div>
         </div>
 
         <div class="card">
@@ -177,14 +204,13 @@
                 <i class="fa-solid fa-couch" style="color: rgba(0,255,0,0.2); font-size: 2rem;"></i>
                 <div class="scan-line"></div>
             </div>
-
             <div class="content">
                 <h3>ZONE_CHILL</h3>
                 <div class="btn-grid">
-                    <a href="https://www.netflix.com" class="link-btn netflix"><i class="fa-brands fa-netflix"></i> Netflix</a>
-                    <a href="https://www.primevideo.com" class="link-btn prime"><i class="fa-brands fa-amazon"></i> Prime</a>
-                    <a href="https://www.youtube.com" class="link-btn youtube"><i class="fa-brands fa-youtube"></i> YouTube</a>
-                    <a href="https://www.disneyplus.com" class="link-btn disney"><i class="fa-solid fa-clapperboard"></i> Disney+</a>
+                    <a href="https://www.netflix.com" class="link-btn netflix" target="_blank"><i class="fa-brands fa-netflix"></i> Netflix</a>
+                    <a href="https://www.primevideo.com" class="link-btn prime" target="_blank"><i class="fa-brands fa-amazon"></i> Prime</a>
+                    <a href="https://www.youtube.com" class="link-btn youtube" target="_blank"><i class="fa-brands fa-youtube"></i> YouTube</a>
+                    <a href="https://www.disneyplus.com" class="link-btn disney" target="_blank"><i class="fa-solid fa-clapperboard"></i> Disney+</a>
                 </div>
             </div>
         </div>
@@ -194,20 +220,32 @@
                 <i class="fa-solid fa-gamepad" style="color: rgba(0,255,0,0.2); font-size: 2rem;"></i>
                 <div class="scan-line" style="animation-delay: 1.5s;"></div>
             </div>
-
             <div class="content">
                 <h3>GAMING_LINK</h3>
                 <div class="btn-grid">
                     <a href="steam://open/main" class="link-btn steam"><i class="fa-brands fa-steam"></i> Steam</a>
-                    <a href="styx2://" class="link-btn" style="border-color: var(--neon);"><i class="fa-solid fa-ghost"></i> Styx 2</a>
-                    <a href="https://www.twitch.tv" class="link-btn" style="background: #6441a5;"><i class="fa-brands fa-twitch"></i> Twitch</a>
                     <a href="discord://" class="link-btn" style="background: #5865F2;"><i class="fa-brands fa-discord"></i> Discord</a>
+                    <a href="https://www.twitch.tv" class="link-btn" style="background: #6441a5;" target="_blank"><i class="fa-brands fa-twitch"></i> Twitch</a>
+                    <a href="styx2://" class="link-btn" style="border-color: var(--neon);"><i class="fa-solid fa-ghost"></i> Styx 2</a>
                 </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="idle-animation">
+                <i class="fa-solid fa-pen-to-square" style="color: rgba(0,255,0,0.2); font-size: 2rem;"></i>
+                <div class="scan-line" style="animation-delay: 0.7s;"></div>
+            </div>
+            <div class="content">
+                <h3><i class="fa-solid fa-terminal"></i> TERMINAL_NOTES</h3>
+                <textarea id="notepad" placeholder="> En attente d'entrée..."></textarea>
+                <div id="save-status">STATUS: IDLE</div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- HORLOGE ---
         function updateClock() {
             const now = new Date();
             document.getElementById('clock').textContent = now.toLocaleTimeString('fr-FR');
@@ -216,6 +254,31 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        // --- GESTION DU BLOC NOTE ---
+        const notepad = document.getElementById('notepad');
+        const status = document.getElementById('save-status');
+
+        // Charger la note sauvegardée au chargement de la page
+        window.onload = () => {
+            const savedNote = localStorage.getItem('baptiste_cmd_notes');
+            if (savedNote) {
+                notepad.value = savedNote;
+            }
+        };
+
+        // Sauvegarde auto à chaque frappe
+        notepad.addEventListener('input', () => {
+            localStorage.setItem('baptiste_cmd_notes', notepad.value);
+            status.textContent = "STATUS: SYNCING...";
+            status.style.color = "var(--neon)";
+            
+            // Petit délai visuel pour confirmer la sauvegarde
+            setTimeout(() => {
+                status.textContent = "STATUS: DATA_STORED";
+                status.style.color = "#444";
+            }, 800);
+        });
     </script>
 </body>
 </html>
