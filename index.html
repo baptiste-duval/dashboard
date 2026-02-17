@@ -2,168 +2,168 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>BAPTISTE CENTER - OS</title>
+    <title>BAPTISTE TERMINAL</title>
     <style>
         :root {
-            --neon-green: #00ff00;
-            --dark-bg: #0a0a0a;
-            --card-bg: #161616;
+            --neon: #00ff00;
+            --bg: #050505;
+            --card: rgba(20, 20, 20, 0.8);
         }
 
-        body { 
-            background: var(--dark-bg); 
-            color: #e0e0e0; 
-            font-family: 'Consolas', monospace; 
-            margin: 0; 
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Courier New', monospace;
+            margin: 0;
             padding: 20px;
             overflow-x: hidden;
+            background-image: linear-gradient(0deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
-        /* Animation d'entrée pour le titre */
-        h1 { 
-            text-align: center; 
-            color: var(--neon-green); 
-            text-shadow: 0 0 10px var(--neon-green);
-            animation: fadeInDown 1s ease-out;
-            letter-spacing: 5px;
+        /* Ligne de scan qui défile */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(0, 255, 0, 0.1);
+            opacity: 0.5;
+            z-index: 100;
+            pointer-events: none;
+            animation: scan 4s linear infinite;
         }
 
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-            gap: 25px; 
-            max-width: 1200px; 
-            margin: auto; 
+        @keyframes scan {
+            0% { top: -10%; }
+            100% { top: 110%; }
         }
 
-        /* Design des Cartes avec animations */
-        .card { 
-            background: var(--card-bg); 
-            border-radius: 10px; 
-            padding: 20px; 
-            box-shadow: 0 0 5px rgba(0,0,0,0.5); 
+        h1 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            color: var(--neon);
+            text-shadow: 0 0 15px var(--neon);
+            animation: flicker 2s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 19.999%, 22%, 62.999%, 64%, 100% { opacity: 1; }
+            20%, 21.999%, 63%, 63.999% { opacity: 0.4; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: var(--card);
             border: 1px solid #333;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0; /* Pour l'animation d'entrée */
-            animation: fadeInUp 0.5s forwards;
+            border-radius: 5px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s;
+            backdrop-filter: blur(5px);
         }
 
         .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: var(--neon-green);
+            border-color: var(--neon);
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            transform: scale(1.03) translateY(-5px);
         }
 
-        /* Horloge Stylisée */
-        #clock { font-size: 3.5em; font-weight: bold; color: #fff; text-shadow: 0 0 10px #fff; }
-        #date { color: var(--neon-green); margin-bottom: 10px; }
-
-        /* Météo ASCII Style */
-        pre {
-            background: #000;
-            color: var(--neon-green);
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 11px;
-            overflow: hidden;
-            border: 1px solid #222;
+        .card h3 {
+            color: var(--neon);
+            border-bottom: 1px solid var(--neon);
+            padding-bottom: 10px;
+            margin-top: 0;
         }
 
-        /* Bouton Animé */
-        .btn { 
-            display: inline-block; 
-            padding: 12px 25px; 
-            background: transparent; 
-            color: var(--neon-green); 
-            text-decoration: none; 
-            border: 2px solid var(--neon-green);
-            border-radius: 5px; 
-            font-weight: bold; 
-            position: relative;
-            overflow: hidden;
+        /* Boutons animés */
+        .btn-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: 1px solid #444;
+            color: #ccc;
+            text-decoration: none;
+            text-align: center;
             transition: 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+            text-transform: uppercase;
+            font-size: 0.9em;
         }
 
         .btn:hover {
-            background: var(--neon-green);
-            color: #000;
-            box-shadow: 0 0 15px var(--neon-green);
+            background: var(--neon);
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--neon);
         }
 
-        /* Animations Keyframes */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        #clock {
+            font-size: 3em;
+            text-align: center;
+            font-weight: bold;
+            margin: 10px 0;
         }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Décalage des animations pour chaque carte */
-        .card:nth-child(1) { animation-delay: 0.2s; }
-        .card:nth-child(2) { animation-delay: 0.4s; }
-        .card:nth-child(3) { animation-delay: 0.6s; }
 
     </style>
 </head>
 <body>
 
-    <h1 id="title">BAPTISTE_OS_V2</h1>
+    <h1>BAPTISTE_OS_SYSTEM</h1>
 
     <div class="grid">
-        <div class="card" style="text-align: center;">
+        <div class="card">
+            <h3>STATUS_TIME</h3>
             <div id="clock">00:00:00</div>
-            <div id="date">SYNC EN COURS...</div>
+            <div id="date" style="text-align: center; color: #888;"></div>
         </div>
 
         <div class="card">
-            <h3 style="color: var(--neon-green)">> WEATHER_DATA_ST_POL</h3>
-            <pre id="weather-ascii">Initialisation du satellite...</pre>
+            <h3>ZONE_CHILL</h3>
+            <div class="btn-list">
+                <a href="https://www.netflix.com" target="_blank" class="btn">Netflix</a>
+                <a href="https://www.primevideo.com" target="_blank" class="btn">Prime Video</a>
+                <a href="https://www.disneyplus.com" target="_blank" class="btn">Disney+</a>
+                <a href="https://www.youtube.com" target="_blank" class="btn">YouTube</a>
+            </div>
         </div>
 
         <div class="card">
-            <h3 style="color: var(--neon-green)">> LAUNCH_SYSTEM</h3>
-            <p>Target: Styx: Shards of Darkness</p>
-            <a href="styx2://" class="btn" onclick="playClick()">RUN PROGRAM</a>
+            <h3>GAMING_LINK</h3>
+            <div class="btn-list">
+                <a href="styx2://" class="btn">Lancer Styx</a>
+                <a href="steam://open/main" class="btn">Ouvrir Steam</a>
+                <a href="https://web.twitch.tv" target="_blank" class="btn">Twitch</a>
+            </div>
         </div>
     </div>
 
     <script>
-        // Audio effect (optionnel, fait "biip" au clic si tu veux)
-        function playClick() {
-            console.log("Lancement du protocole...");
-        }
-
-        // Horloge temps réel
+        // Update Horloge
         function updateClock() {
             const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('clock').textContent = now.toLocaleTimeString('fr-FR');
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
             document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', options).toUpperCase();
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Récupération météo Saint-Pol
-        fetch('https://wttr.in/Saint-Pol-sur-Ternoise?0&lang=fr')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('weather-ascii').textContent = data;
-            })
-            .catch(err => {
-                document.getElementById('weather-ascii').textContent = "SYSTEM_ERROR: Météo hors ligne";
-            });
-
-        // Effet de glitch aléatoire sur le titre
-        const title = document.getElementById('title');
-        setInterval(() => {
-            if(Math.random() > 0.95) {
-                title.style.textShadow = "2px 0 #ff0000, -2px 0 #0000ff";
-                setTimeout(() => title.style.textShadow = "0 0 10px var(--neon-green)", 100);
-            }
-        }, 500);
+        // Animation de texte façon terminal au chargement
+        console.log("Système Baptiste initialisé...");
     </script>
 </body>
 </html>
