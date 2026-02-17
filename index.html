@@ -8,7 +8,15 @@
         :root {
             --neon: #00ff00;
             --bg: #050505;
-            --card-bg: rgba(15, 15, 15, 0.95);
+            --card-bg: rgba(15, 15, 15, 0.85);
+            --it2i-blue: #0369a1;
+        }
+
+        /* Mode Clair (si activé) */
+        :not(.dark) {
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --neon: #0369a1;
         }
 
         body {
@@ -18,6 +26,20 @@
             margin: 0;
             padding: 40px;
             overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            box-sizing: border-box;
+        }
+
+        /* Canevas d'animation de fond */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
         }
 
         .grid {
@@ -26,11 +48,13 @@
             gap: 30px;
             max-width: 1200px;
             margin: auto;
+            position: relative;
+            z-index: 1;
         }
 
         .card {
             background: var(--card-bg);
-            border: 1px solid #222;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 20px;
             padding: 25px;
             height: 280px;
@@ -41,6 +65,7 @@
             justify-content: center;
             overflow: hidden;
             transition: 0.5s;
+            backdrop-filter: blur(10px); /* Effet Glassmorphism */
         }
 
         /* --- ANIMATION DE VEILLE --- */
@@ -104,16 +129,11 @@
         .card:hover {
             border-color: var(--neon);
             box-shadow: 0 0 40px rgba(0, 255, 0, 0.1);
+            transform: translateY(-5px);
         }
 
-        .card:hover .idle-animation {
-            opacity: 0;
-        }
-
-        .card:hover .content {
-            opacity: 1;
-            transform: scale(1);
-        }
+        .card:hover .idle-animation { opacity: 0; }
+        .card:hover .content { opacity: 1; transform: scale(1); }
 
         h3 {
             color: var(--neon);
@@ -141,7 +161,7 @@
             justify-content: center;
             gap: 10px;
             padding: 12px;
-            background: #1a1a1a;
+            background: rgba(40, 40, 40, 0.5);
             border: 1px solid #333;
             border-radius: 10px;
             color: #eee;
@@ -154,22 +174,29 @@
         .link-btn:hover {
             transform: translateY(-3px);
             color: white;
+            border-color: var(--neon);
         }
 
-        /* Couleurs Hover */
-        .netflix:hover { background: #E50914; box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4); }
-        .prime:hover { background: #00A8E1; box-shadow: 0 5px 15px rgba(0, 168, 225, 0.4); }
-        .youtube:hover { background: #FF0000; box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4); }
-        .disney:hover { background: #0063e5; box-shadow: 0 5px 15px rgba(0, 99, 229, 0.4); }
-        .steam:hover { background: #171a21; border-color: #66c0f4; }
+        .netflix:hover { background: #E50914; }
+        .prime:hover { background: #00A8E1; }
+        .youtube:hover { background: #FF0000; }
+        .disney:hover { background: #0063e5; }
+        .steam:hover { background: #171a21; }
 
-        #clock { font-size: 3rem; font-weight: 800; font-family: monospace; text-align: center; margin-top: 10px; }
+        #clock { 
+            font-size: 3rem; 
+            font-weight: 800; 
+            font-family: monospace; 
+            text-align: center; 
+            margin-top: 10px;
+            color: white;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
 
-        /* --- STYLE BLOC NOTE --- */
         #notepad {
             width: 100%;
             flex-grow: 1;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             color: var(--neon);
             border: 1px solid #333;
             border-radius: 8px;
@@ -178,22 +205,41 @@
             font-size: 0.85rem;
             resize: none;
             outline: none;
-            box-sizing: border-box;
         }
 
         #save-status {
             font-size: 0.65rem;
-            color: #444;
+            color: #555;
             text-align: right;
             margin-top: 5px;
             letter-spacing: 1px;
         }
+
+        /* --- THEME TOGGLE BUTTON --- */
+        #theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--neon);
+            color: var(--neon);
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
     </style>
 </head>
-<body>
+<body class="dark">
+
+    <canvas id="bgCanvas"></canvas>
 
     <div class="grid">
-        <div class="card" style="border-color: #333;">
+        <div class="card" style="border-color: rgba(255,255,255,0.1);">
             <h3><i class="fa-solid fa-microchip"></i> SYSTEM_ACTIVE</h3>
             <div id="clock">00:00:00</div>
             <div id="date" style="color: var(--neon); font-size: 0.8rem; text-align: center; margin-top: 10px;"></div>
@@ -244,7 +290,22 @@
         </div>
     </div>
 
+    <button id="theme-toggle" onclick="toggleTheme()">Toggle_Mode</button>
+
     <script>
+        // --- GESTION DU THÈME ---
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark');
+            const isDark = body.classList.contains('dark');
+            localStorage.setItem('cmd_theme', isDark ? 'dark' : 'light');
+        }
+
+        // Charger thème sauvegardé
+        if (localStorage.getItem('cmd_theme') === 'light') {
+            document.body.classList.remove('dark');
+        }
+
         // --- HORLOGE ---
         function updateClock() {
             const now = new Date();
@@ -259,26 +320,97 @@
         const notepad = document.getElementById('notepad');
         const status = document.getElementById('save-status');
 
-        // Charger la note sauvegardée au chargement de la page
-        window.onload = () => {
-            const savedNote = localStorage.getItem('baptiste_cmd_notes');
-            if (savedNote) {
-                notepad.value = savedNote;
-            }
-        };
+        notepad.value = localStorage.getItem('baptiste_cmd_notes') || "";
 
-        // Sauvegarde auto à chaque frappe
         notepad.addEventListener('input', () => {
             localStorage.setItem('baptiste_cmd_notes', notepad.value);
             status.textContent = "STATUS: SYNCING...";
             status.style.color = "var(--neon)";
-            
-            // Petit délai visuel pour confirmer la sauvegarde
             setTimeout(() => {
                 status.textContent = "STATUS: DATA_STORED";
-                status.style.color = "#444";
+                status.style.color = "#555";
             }, 800);
         });
+
+        // --- ANIMATION DE FOND (CANVAS PARTICLES) ---
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                else if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                else if (this.y < 0) this.y = canvas.height;
+            }
+            draw(color) {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function createParticles() {
+            particles = [];
+            const count = (canvas.width * canvas.height) / 12000;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const isDark = document.body.classList.contains('dark');
+            const color = isDark ? 'rgba(0, 255, 0, 0.2)' : 'rgba(3, 105, 161, 0.2)';
+            const lineColor = isDark ? 'rgba(0, 255, 0, 0.05)' : 'rgba(3, 105, 161, 0.08)';
+
+            particles.forEach(p => {
+                p.update();
+                p.draw(color);
+            });
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 120) {
+                        ctx.strokeStyle = lineColor;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            initCanvas();
+            createParticles();
+        });
+
+        initCanvas();
+        createParticles();
+        animate();
     </script>
 </body>
 </html>
