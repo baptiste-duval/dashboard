@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>BAPTISTE CENTER - OS</title>
+    <style>
+        :root {
+            --neon-green: #00ff00;
+            --dark-bg: #0a0a0a;
+            --card-bg: #161616;
+        }
+
+        body { 
+            background: var(--dark-bg); 
+            color: #e0e0e0; 
+            font-family: 'Consolas', monospace; 
+            margin: 0; 
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Animation d'entrée pour le titre */
+        h1 { 
+            text-align: center; 
+            color: var(--neon-green); 
+            text-shadow: 0 0 10px var(--neon-green);
+            animation: fadeInDown 1s ease-out;
+            letter-spacing: 5px;
+        }
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+            gap: 25px; 
+            max-width: 1200px; 
+            margin: auto; 
+        }
+
+        /* Design des Cartes avec animations */
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 10px; 
+            padding: 20px; 
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); 
+            border: 1px solid #333;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0; /* Pour l'animation d'entrée */
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        /* Horloge Stylisée */
+        #clock { font-size: 3.5em; font-weight: bold; color: #fff; text-shadow: 0 0 10px #fff; }
+        #date { color: var(--neon-green); margin-bottom: 10px; }
+
+        /* Météo ASCII Style */
+        pre {
+            background: #000;
+            color: var(--neon-green);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            overflow: hidden;
+            border: 1px solid #222;
+        }
+
+        /* Bouton Animé */
+        .btn { 
+            display: inline-block; 
+            padding: 12px 25px; 
+            background: transparent; 
+            color: var(--neon-green); 
+            text-decoration: none; 
+            border: 2px solid var(--neon-green);
+            border-radius: 5px; 
+            font-weight: bold; 
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--neon-green);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        /* Animations Keyframes */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Décalage des animations pour chaque carte */
+        .card:nth-child(1) { animation-delay: 0.2s; }
+        .card:nth-child(2) { animation-delay: 0.4s; }
+        .card:nth-child(3) { animation-delay: 0.6s; }
+
+    </style>
+</head>
+<body>
+
+    <h1 id="title">BAPTISTE_OS_V2</h1>
+
+    <div class="grid">
+        <div class="card" style="text-align: center;">
+            <div id="clock">00:00:00</div>
+            <div id="date">SYNC EN COURS...</div>
+        </div>
+
+        <div class="card">
+            <h3 style="color: var(--neon-green)">> WEATHER_DATA_ST_POL</h3>
+            <pre id="weather-ascii">Initialisation du satellite...</pre>
+        </div>
+
+        <div class="card">
+            <h3 style="color: var(--neon-green)">> LAUNCH_SYSTEM</h3>
+            <p>Target: Styx: Shards of Darkness</p>
+            <a href="styx2://" class="btn" onclick="playClick()">RUN PROGRAM</a>
+        </div>
+    </div>
+
+    <script>
+        // Audio effect (optionnel, fait "biip" au clic si tu veux)
+        function playClick() {
+            console.log("Lancement du protocole...");
+        }
+
+        // Horloge temps réel
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('clock').textContent = now.toLocaleTimeString('fr-FR');
+            document.getElementById('date').textContent = now.toLocaleDateString('fr-FR', options).toUpperCase();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Récupération météo Saint-Pol
+        fetch('https://wttr.in/Saint-Pol-sur-Ternoise?0&lang=fr')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('weather-ascii').textContent = data;
+            })
+            .catch(err => {
+                document.getElementById('weather-ascii').textContent = "SYSTEM_ERROR: Météo hors ligne";
+            });
+
+        // Effet de glitch aléatoire sur le titre
+        const title = document.getElementById('title');
+        setInterval(() => {
+            if(Math.random() > 0.95) {
+                title.style.textShadow = "2px 0 #ff0000, -2px 0 #0000ff";
+                setTimeout(() => title.style.textShadow = "0 0 10px var(--neon-green)", 100);
+            }
+        }, 500);
+    </script>
+</body>
+</html>
